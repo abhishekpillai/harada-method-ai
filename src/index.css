@@ -129,3 +129,66 @@ body {
     box-shadow: 0 0 20px 10px rgba(59, 130, 246, 0.5);
   }
 }
+
+/* Print styles for export functionality */
+@media print {
+  /* Hide everything except the grid */
+  body {
+    background: white !important;
+  }
+
+  header,
+  button,
+  .instructions-section,
+  footer {
+    display: none !important;
+  }
+
+  /* Show the grid nicely */
+  .grid-container {
+    page-break-inside: avoid;
+    margin: 0 auto;
+  }
+
+  /* Show watermark when printing */
+  .print-watermark {
+    display: block !important;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 10px;
+    color: #9ca3af;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 0.5rem;
+  }
+
+  /* Ensure colors print correctly */
+  .grid-cell-center {
+    background-color: #FFEB3B !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .grid-cell-pillar {
+    background-color: rgb(209, 213, 219) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .grid-cell-task {
+    background-color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ensure borders print */
+  .grid-cell {
+    border: 1px solid rgb(156, 163, 175) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Watermark hidden by default, shown only when printing */
+.print-watermark {
+  display: none;
+}

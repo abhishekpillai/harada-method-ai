@@ -6,8 +6,6 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import { useOpenAI } from './hooks/useOpenAI';
 import type { HaradaGrid as HaradaGridType } from './types';
 import { motion } from 'framer-motion';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 const OHTANI_TEMPLATE: HaradaGridType = {
   goal: "Get drafted 1st overall by 8 NPB teams",
@@ -134,8 +132,6 @@ function App() {
   const [apiKey, setApiKey] = useLocalStorage('openai-api-key', '');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const [showExportMenu, setShowExportMenu] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
 
@@ -157,18 +153,6 @@ function App() {
       setShowGrid(true);
     }
   }, [gridData]);
-
-  // Close export menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (showExportMenu && !(e.target as Element).closest('.relative')) {
-        setShowExportMenu(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [showExportMenu]);
 
   const handleGoalSubmit = async (goal: string) => {
     const effectiveApiKey = apiKey || import.meta.env.VITE_OPENAI_API_KEY;
@@ -266,280 +250,8 @@ function App() {
     setShowGrid(true);
   };
 
-  const handleExportPNG = async () => {
-    console.log('Export PNG clicked', { hasRef: !!gridRef.current, hasData: !!gridData });
-
-    if (!gridRef.current || !gridData) {
-      console.error('Missing ref or data', { ref: !!gridRef.current, data: !!gridData });
-      alert('Cannot export: Grid not ready. Please try again.');
-      return;
-    }
-
-    try {
-      setIsExporting(true);
-      setShowExportMenu(false);
-
-      // Wait for watermark to render
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Add temporary style to override oklch colors with standard RGB
-      const styleEl = document.createElement('style');
-      styleEl.id = 'export-color-override';
-      styleEl.textContent = `
-        :root {
-          --color-harada-yellow: #FFEB3B !important;
-          --color-harada-gray: #E5E5E5 !important;
-          --color-harada-dark-gray: #666666 !important;
-        }
-        * {
-          color: rgb(17, 24, 39) !important;
-        }
-        body {
-          background-color: rgb(249, 250, 251) !important;
-          background: rgb(249, 250, 251) !important;
-        }
-        .bg-gradient-to-br {
-          background: rgb(249, 250, 251) !important;
-          background-color: rgb(249, 250, 251) !important;
-        }
-        .bg-white {
-          background: rgb(255, 255, 255) !important;
-          background-color: rgb(255, 255, 255) !important;
-        }
-        .bg-gray-50 {
-          background: rgb(249, 250, 251) !important;
-          background-color: rgb(249, 250, 251) !important;
-        }
-        .bg-gray-100 {
-          background: rgb(243, 244, 246) !important;
-          background-color: rgb(243, 244, 246) !important;
-        }
-        .bg-gray-200 {
-          background: rgb(229, 231, 235) !important;
-          background-color: rgb(229, 231, 235) !important;
-        }
-        .bg-gray-300 {
-          background: rgb(209, 213, 219) !important;
-          background-color: rgb(209, 213, 219) !important;
-        }
-        .bg-gray-400 {
-          background: rgb(156, 163, 175) !important;
-          background-color: rgb(156, 163, 175) !important;
-        }
-        .bg-gray-500 {
-          background: rgb(107, 114, 128) !important;
-          background-color: rgb(107, 114, 128) !important;
-        }
-        .bg-gray-700 {
-          background: rgb(55, 65, 81) !important;
-          background-color: rgb(55, 65, 81) !important;
-        }
-        .bg-blue-50 {
-          background: rgb(239, 246, 255) !important;
-          background-color: rgb(239, 246, 255) !important;
-        }
-        .text-gray-400 { color: rgb(156, 163, 175) !important; }
-        .text-gray-500 { color: rgb(107, 114, 128) !important; }
-        .text-gray-600 { color: rgb(75, 85, 99) !important; }
-        .text-gray-700 { color: rgb(55, 65, 81) !important; }
-        .text-gray-900 { color: rgb(17, 24, 39) !important; }
-        .text-blue-800 { color: rgb(30, 64, 175) !important; }
-        .text-blue-900 { color: rgb(30, 58, 138) !important; }
-        .border-gray-200 { border-color: rgb(229, 231, 235) !important; }
-        .border-gray-300 { border-color: rgb(209, 213, 219) !important; }
-        .border-gray-500 { border-color: rgb(107, 114, 128) !important; }
-        .border-gray-700 { border-color: rgb(55, 65, 81) !important; }
-        .border-blue-200 { border-color: rgb(191, 219, 254) !important; }
-        .grid-cell-center {
-          background: #FFEB3B !important;
-          background-color: #FFEB3B !important;
-        }
-        .grid-cell-pillar {
-          background: rgb(209, 213, 219) !important;
-          background-color: rgb(209, 213, 219) !important;
-        }
-        .grid-cell-task {
-          background: rgb(255, 255, 255) !important;
-          background-color: rgb(255, 255, 255) !important;
-        }
-      `;
-      document.head.appendChild(styleEl);
-
-      // Force a reflow to ensure styles are applied
-      void document.body.offsetHeight;
-
-      console.log('Starting html2canvas...');
-      const canvas = await html2canvas(gridRef.current, {
-        scale: 2,
-        backgroundColor: '#f9fafb',
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-      });
-
-      // Remove temporary style
-      styleEl.remove();
-
-      console.log('Canvas created, downloading...');
-      const link = document.createElement('a');
-      link.download = `harada-method-${gridData.goal.slice(0, 30).replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      console.log('PNG export complete!');
-    } catch (error) {
-      console.error('Error exporting PNG:', error);
-      // Clean up style if error occurs
-      document.getElementById('export-color-override')?.remove();
-      alert(`Failed to export as PNG: ${(error as Error).message}`);
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const handleExportPDF = async () => {
-    console.log('Export PDF clicked', { hasRef: !!gridRef.current, hasData: !!gridData });
-
-    if (!gridRef.current || !gridData) {
-      console.error('Missing ref or data', { ref: !!gridRef.current, data: !!gridData });
-      alert('Cannot export: Grid not ready. Please try again.');
-      return;
-    }
-
-    try {
-      setIsExporting(true);
-      setShowExportMenu(false);
-
-      // Wait for watermark to render
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Add temporary style to override oklch colors with standard RGB
-      const styleEl = document.createElement('style');
-      styleEl.id = 'export-color-override';
-      styleEl.textContent = `
-        :root {
-          --color-harada-yellow: #FFEB3B !important;
-          --color-harada-gray: #E5E5E5 !important;
-          --color-harada-dark-gray: #666666 !important;
-        }
-        * {
-          color: rgb(17, 24, 39) !important;
-        }
-        body {
-          background-color: rgb(249, 250, 251) !important;
-          background: rgb(249, 250, 251) !important;
-        }
-        .bg-gradient-to-br {
-          background: rgb(249, 250, 251) !important;
-          background-color: rgb(249, 250, 251) !important;
-        }
-        .bg-white {
-          background: rgb(255, 255, 255) !important;
-          background-color: rgb(255, 255, 255) !important;
-        }
-        .bg-gray-50 {
-          background: rgb(249, 250, 251) !important;
-          background-color: rgb(249, 250, 251) !important;
-        }
-        .bg-gray-100 {
-          background: rgb(243, 244, 246) !important;
-          background-color: rgb(243, 244, 246) !important;
-        }
-        .bg-gray-200 {
-          background: rgb(229, 231, 235) !important;
-          background-color: rgb(229, 231, 235) !important;
-        }
-        .bg-gray-300 {
-          background: rgb(209, 213, 219) !important;
-          background-color: rgb(209, 213, 219) !important;
-        }
-        .bg-gray-400 {
-          background: rgb(156, 163, 175) !important;
-          background-color: rgb(156, 163, 175) !important;
-        }
-        .bg-gray-500 {
-          background: rgb(107, 114, 128) !important;
-          background-color: rgb(107, 114, 128) !important;
-        }
-        .bg-gray-700 {
-          background: rgb(55, 65, 81) !important;
-          background-color: rgb(55, 65, 81) !important;
-        }
-        .bg-blue-50 {
-          background: rgb(239, 246, 255) !important;
-          background-color: rgb(239, 246, 255) !important;
-        }
-        .text-gray-400 { color: rgb(156, 163, 175) !important; }
-        .text-gray-500 { color: rgb(107, 114, 128) !important; }
-        .text-gray-600 { color: rgb(75, 85, 99) !important; }
-        .text-gray-700 { color: rgb(55, 65, 81) !important; }
-        .text-gray-900 { color: rgb(17, 24, 39) !important; }
-        .text-blue-800 { color: rgb(30, 64, 175) !important; }
-        .text-blue-900 { color: rgb(30, 58, 138) !important; }
-        .border-gray-200 { border-color: rgb(229, 231, 235) !important; }
-        .border-gray-300 { border-color: rgb(209, 213, 219) !important; }
-        .border-gray-500 { border-color: rgb(107, 114, 128) !important; }
-        .border-gray-700 { border-color: rgb(55, 65, 81) !important; }
-        .border-blue-200 { border-color: rgb(191, 219, 254) !important; }
-        .grid-cell-center {
-          background: #FFEB3B !important;
-          background-color: #FFEB3B !important;
-        }
-        .grid-cell-pillar {
-          background: rgb(209, 213, 219) !important;
-          background-color: rgb(209, 213, 219) !important;
-        }
-        .grid-cell-task {
-          background: rgb(255, 255, 255) !important;
-          background-color: rgb(255, 255, 255) !important;
-        }
-      `;
-      document.head.appendChild(styleEl);
-
-      // Force a reflow to ensure styles are applied
-      void document.body.offsetHeight;
-
-      console.log('Starting html2canvas...');
-      const canvas = await html2canvas(gridRef.current, {
-        scale: 2,
-        backgroundColor: '#f9fafb',
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-      });
-
-      // Remove temporary style
-      styleEl.remove();
-
-      console.log('Canvas created, generating PDF...');
-      const imgWidth = 210; // A4 width in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      const pdf = new jsPDF({
-        orientation: imgHeight > imgWidth ? 'portrait' : 'landscape',
-        unit: 'mm',
-        format: 'a4',
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-
-      const finalWidth = imgWidth * ratio;
-      const finalHeight = imgHeight * ratio;
-      const x = (pdfWidth - finalWidth) / 2;
-      const y = (pdfHeight - finalHeight) / 2;
-
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', x, y, finalWidth, finalHeight);
-      pdf.save(`harada-method-${gridData.goal.slice(0, 30).replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${Date.now()}.pdf`);
-      console.log('PDF export complete!');
-    } catch (error) {
-      console.error('Error exporting PDF:', error);
-      // Clean up style if error occurs
-      document.getElementById('export-color-override')?.remove();
-      alert(`Failed to export as PDF: ${(error as Error).message}`);
-    } finally {
-      setIsExporting(false);
-    }
+  const handlePrint = () => {
+    window.print();
   };
 
   return (
@@ -569,33 +281,12 @@ function App() {
             </button>
             {gridData && (
               <>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowExportMenu(!showExportMenu)}
-                    className="min-h-[44px] px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center gap-1 touch-manipulation"
-                  >
-                    📥 Export Grid
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {showExportMenu && (
-                    <div className="absolute top-full mt-1 left-0 sm:left-auto sm:right-0 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-[160px]">
-                      <button
-                        onClick={handleExportPNG}
-                        className="w-full min-h-[44px] px-4 py-2.5 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 touch-manipulation"
-                      >
-                        <span>🖼️</span> Export as PNG
-                      </button>
-                      <button
-                        onClick={handleExportPDF}
-                        className="w-full min-h-[44px] px-4 py-2.5 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-t border-gray-200 touch-manipulation"
-                      >
-                        <span>📄</span> Export as PDF
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <button
+                  onClick={handlePrint}
+                  className="min-h-[44px] px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors touch-manipulation"
+                >
+                  🖨️ Print/Export Grid
+                </button>
                 <button
                   onClick={handleReset}
                   className="min-h-[44px] px-4 py-2.5 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 transition-colors touch-manipulation"
@@ -645,20 +336,18 @@ function App() {
           >
             <HaradaGrid gridData={gridData} onCellUpdate={handleCellUpdate} />
 
-            {/* Watermark (only visible during export) */}
-            {isExporting && (
-              <div className="mt-4 text-center text-xs text-gray-400 border-t border-gray-200 pt-4">
-                <p>Generated with Harada Method AI • {new Date().toLocaleDateString()}</p>
-                <p className="mt-1">x.com/abhiondemand</p>
-              </div>
-            )}
+            {/* Watermark (only visible when printing) */}
+            <div className="print-watermark">
+              <p>Generated with Harada Method AI • {new Date().toLocaleDateString()}</p>
+              <p className="mt-1">x.com/abhiondemand</p>
+            </div>
 
             {/* Instructions */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="mt-6 sm:mt-8 max-w-3xl mx-auto bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6 mx-2"
+              className="instructions-section mt-6 sm:mt-8 max-w-3xl mx-auto bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6 mx-2"
             >
               <h3 className="text-base sm:text-lg font-semibold text-blue-900 mb-2 sm:mb-3">
                 💡 How to use your Harada Method grid:
@@ -668,7 +357,7 @@ function App() {
                 <li>• <strong>Click pillar names</strong> in the center to jump to their section</li>
                 <li>• The center shows your main goal surrounded by 8 pillars</li>
                 <li>• Each outer section shows a pillar with its 8 daily tasks</li>
-                <li>• Export as PDF or PNG to print or share your grid</li>
+                <li>• Click Print/Export to save as PDF or print your grid</li>
               </ul>
             </motion.div>
           </motion.div>
