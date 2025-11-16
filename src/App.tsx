@@ -593,8 +593,7 @@ function App() {
         className="text-center mt-16 pb-8 text-sm text-gray-500"
       >
         <p>Inspired by Shohei Ohtani's success with the Harada Method</p>
-        <p className="mt-2">Built with ❤️ using React, Tailwind CSS, and OpenAI</p>
-        <p className="mt-2 text-xs text-gray-400">
+        <p className="mt-2">
           Created by{' '}
           <a
             href="https://x.com/abhiondemand"
