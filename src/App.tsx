@@ -286,19 +286,58 @@ function App() {
       const styleEl = document.createElement('style');
       styleEl.id = 'export-color-override';
       styleEl.textContent = `
+        :root {
+          --color-harada-yellow: #FFEB3B !important;
+          --color-harada-gray: #E5E5E5 !important;
+          --color-harada-dark-gray: #666666 !important;
+        }
         * {
           color: rgb(17, 24, 39) !important;
         }
-        .bg-gradient-to-br { background: rgb(249, 250, 251) !important; }
-        .bg-white { background: rgb(255, 255, 255) !important; }
-        .bg-gray-50 { background: rgb(249, 250, 251) !important; }
-        .bg-gray-100 { background: rgb(243, 244, 246) !important; }
-        .bg-gray-200 { background: rgb(229, 231, 235) !important; }
-        .bg-gray-300 { background: rgb(209, 213, 219) !important; }
-        .bg-gray-400 { background: rgb(156, 163, 175) !important; }
-        .bg-gray-500 { background: rgb(107, 114, 128) !important; }
-        .bg-gray-700 { background: rgb(55, 65, 81) !important; }
-        .bg-blue-50 { background: rgb(239, 246, 255) !important; }
+        body {
+          background-color: rgb(249, 250, 251) !important;
+          background: rgb(249, 250, 251) !important;
+        }
+        .bg-gradient-to-br {
+          background: rgb(249, 250, 251) !important;
+          background-color: rgb(249, 250, 251) !important;
+        }
+        .bg-white {
+          background: rgb(255, 255, 255) !important;
+          background-color: rgb(255, 255, 255) !important;
+        }
+        .bg-gray-50 {
+          background: rgb(249, 250, 251) !important;
+          background-color: rgb(249, 250, 251) !important;
+        }
+        .bg-gray-100 {
+          background: rgb(243, 244, 246) !important;
+          background-color: rgb(243, 244, 246) !important;
+        }
+        .bg-gray-200 {
+          background: rgb(229, 231, 235) !important;
+          background-color: rgb(229, 231, 235) !important;
+        }
+        .bg-gray-300 {
+          background: rgb(209, 213, 219) !important;
+          background-color: rgb(209, 213, 219) !important;
+        }
+        .bg-gray-400 {
+          background: rgb(156, 163, 175) !important;
+          background-color: rgb(156, 163, 175) !important;
+        }
+        .bg-gray-500 {
+          background: rgb(107, 114, 128) !important;
+          background-color: rgb(107, 114, 128) !important;
+        }
+        .bg-gray-700 {
+          background: rgb(55, 65, 81) !important;
+          background-color: rgb(55, 65, 81) !important;
+        }
+        .bg-blue-50 {
+          background: rgb(239, 246, 255) !important;
+          background-color: rgb(239, 246, 255) !important;
+        }
         .text-gray-400 { color: rgb(156, 163, 175) !important; }
         .text-gray-500 { color: rgb(107, 114, 128) !important; }
         .text-gray-600 { color: rgb(75, 85, 99) !important; }
@@ -311,11 +350,23 @@ function App() {
         .border-gray-500 { border-color: rgb(107, 114, 128) !important; }
         .border-gray-700 { border-color: rgb(55, 65, 81) !important; }
         .border-blue-200 { border-color: rgb(191, 219, 254) !important; }
-        .grid-cell-center { background-color: #FFEB3B !important; }
-        .grid-cell-pillar { background-color: rgb(209, 213, 219) !important; }
-        .grid-cell-task { background-color: rgb(255, 255, 255) !important; }
+        .grid-cell-center {
+          background: #FFEB3B !important;
+          background-color: #FFEB3B !important;
+        }
+        .grid-cell-pillar {
+          background: rgb(209, 213, 219) !important;
+          background-color: rgb(209, 213, 219) !important;
+        }
+        .grid-cell-task {
+          background: rgb(255, 255, 255) !important;
+          background-color: rgb(255, 255, 255) !important;
+        }
       `;
       document.head.appendChild(styleEl);
+
+      // Force a reflow to ensure styles are applied
+      void document.body.offsetHeight;
 
       console.log('Starting html2canvas...');
       const canvas = await html2canvas(gridRef.current, {
@@ -365,19 +416,58 @@ function App() {
       const styleEl = document.createElement('style');
       styleEl.id = 'export-color-override';
       styleEl.textContent = `
+        :root {
+          --color-harada-yellow: #FFEB3B !important;
+          --color-harada-gray: #E5E5E5 !important;
+          --color-harada-dark-gray: #666666 !important;
+        }
         * {
           color: rgb(17, 24, 39) !important;
         }
-        .bg-gradient-to-br { background: rgb(249, 250, 251) !important; }
-        .bg-white { background: rgb(255, 255, 255) !important; }
-        .bg-gray-50 { background: rgb(249, 250, 251) !important; }
-        .bg-gray-100 { background: rgb(243, 244, 246) !important; }
-        .bg-gray-200 { background: rgb(229, 231, 235) !important; }
-        .bg-gray-300 { background: rgb(209, 213, 219) !important; }
-        .bg-gray-400 { background: rgb(156, 163, 175) !important; }
-        .bg-gray-500 { background: rgb(107, 114, 128) !important; }
-        .bg-gray-700 { background: rgb(55, 65, 81) !important; }
-        .bg-blue-50 { background: rgb(239, 246, 255) !important; }
+        body {
+          background-color: rgb(249, 250, 251) !important;
+          background: rgb(249, 250, 251) !important;
+        }
+        .bg-gradient-to-br {
+          background: rgb(249, 250, 251) !important;
+          background-color: rgb(249, 250, 251) !important;
+        }
+        .bg-white {
+          background: rgb(255, 255, 255) !important;
+          background-color: rgb(255, 255, 255) !important;
+        }
+        .bg-gray-50 {
+          background: rgb(249, 250, 251) !important;
+          background-color: rgb(249, 250, 251) !important;
+        }
+        .bg-gray-100 {
+          background: rgb(243, 244, 246) !important;
+          background-color: rgb(243, 244, 246) !important;
+        }
+        .bg-gray-200 {
+          background: rgb(229, 231, 235) !important;
+          background-color: rgb(229, 231, 235) !important;
+        }
+        .bg-gray-300 {
+          background: rgb(209, 213, 219) !important;
+          background-color: rgb(209, 213, 219) !important;
+        }
+        .bg-gray-400 {
+          background: rgb(156, 163, 175) !important;
+          background-color: rgb(156, 163, 175) !important;
+        }
+        .bg-gray-500 {
+          background: rgb(107, 114, 128) !important;
+          background-color: rgb(107, 114, 128) !important;
+        }
+        .bg-gray-700 {
+          background: rgb(55, 65, 81) !important;
+          background-color: rgb(55, 65, 81) !important;
+        }
+        .bg-blue-50 {
+          background: rgb(239, 246, 255) !important;
+          background-color: rgb(239, 246, 255) !important;
+        }
         .text-gray-400 { color: rgb(156, 163, 175) !important; }
         .text-gray-500 { color: rgb(107, 114, 128) !important; }
         .text-gray-600 { color: rgb(75, 85, 99) !important; }
@@ -390,11 +480,23 @@ function App() {
         .border-gray-500 { border-color: rgb(107, 114, 128) !important; }
         .border-gray-700 { border-color: rgb(55, 65, 81) !important; }
         .border-blue-200 { border-color: rgb(191, 219, 254) !important; }
-        .grid-cell-center { background-color: #FFEB3B !important; }
-        .grid-cell-pillar { background-color: rgb(209, 213, 219) !important; }
-        .grid-cell-task { background-color: rgb(255, 255, 255) !important; }
+        .grid-cell-center {
+          background: #FFEB3B !important;
+          background-color: #FFEB3B !important;
+        }
+        .grid-cell-pillar {
+          background: rgb(209, 213, 219) !important;
+          background-color: rgb(209, 213, 219) !important;
+        }
+        .grid-cell-task {
+          background: rgb(255, 255, 255) !important;
+          background-color: rgb(255, 255, 255) !important;
+        }
       `;
       document.head.appendChild(styleEl);
+
+      // Force a reflow to ensure styles are applied
+      void document.body.offsetHeight;
 
       console.log('Starting html2canvas...');
       const canvas = await html2canvas(gridRef.current, {
@@ -447,21 +549,21 @@ function App() {
         <motion.header
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12 px-2"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             Harada Method AI
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-4 sm:mb-6 px-2">
             Transform your dreams into actionable daily habits with the same framework
             Shohei Ohtani used to become a baseball superstar.
           </p>
 
           {/* Action buttons */}
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 sm:mb-8 px-2">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="min-h-[44px] px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors touch-manipulation"
             >
               ⚙️ API Settings
             </button>
@@ -470,7 +572,7 @@ function App() {
                 <div className="relative">
                   <button
                     onClick={() => setShowExportMenu(!showExportMenu)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center gap-1"
+                    className="min-h-[44px] px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center gap-1 touch-manipulation"
                   >
                     📥 Export Grid
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -478,16 +580,16 @@ function App() {
                     </svg>
                   </button>
                   {showExportMenu && (
-                    <div className="absolute top-full mt-1 left-0 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-[150px]">
+                    <div className="absolute top-full mt-1 left-0 sm:left-auto sm:right-0 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-[160px]">
                       <button
                         onClick={handleExportPNG}
-                        className="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                        className="w-full min-h-[44px] px-4 py-2.5 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 touch-manipulation"
                       >
                         <span>🖼️</span> Export as PNG
                       </button>
                       <button
                         onClick={handleExportPDF}
-                        className="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-t border-gray-200"
+                        className="w-full min-h-[44px] px-4 py-2.5 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-t border-gray-200 touch-manipulation"
                       >
                         <span>📄</span> Export as PDF
                       </button>
@@ -496,7 +598,7 @@ function App() {
                 </div>
                 <button
                   onClick={handleReset}
-                  className="px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 transition-colors"
+                  className="min-h-[44px] px-4 py-2.5 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 transition-colors touch-manipulation"
                 >
                   🔄 Start Over
                 </button>
@@ -505,7 +607,7 @@ function App() {
             {!gridData && (
               <button
                 onClick={handleLoadTemplate}
-                className="px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-md hover:bg-blue-50 transition-colors"
+                className="min-h-[44px] px-4 py-2.5 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-md hover:bg-blue-50 transition-colors touch-manipulation"
               >
                 ⭐ Load Ohtani's Example
               </button>
@@ -556,12 +658,12 @@ function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="mt-8 max-w-3xl mx-auto bg-blue-50 border border-blue-200 rounded-lg p-6"
+              className="mt-6 sm:mt-8 max-w-3xl mx-auto bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6 mx-2"
             >
-              <h3 className="text-lg font-semibold text-blue-900 mb-3">
+              <h3 className="text-base sm:text-lg font-semibold text-blue-900 mb-2 sm:mb-3">
                 💡 How to use your Harada Method grid:
               </h3>
-              <ul className="space-y-2 text-blue-800">
+              <ul className="space-y-1.5 sm:space-y-2 text-sm sm:text-base text-blue-800">
                 <li>• <strong>Double-click</strong> any pillar or task to edit it</li>
                 <li>• <strong>Click pillar names</strong> in the center to jump to their section</li>
                 <li>• The center shows your main goal surrounded by 8 pillars</li>

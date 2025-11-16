@@ -21,11 +21,11 @@ export function GoalInput({ onSubmit, isGenerating }: GoalInputProps) {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-3xl mx-auto mb-8"
+      className="w-full max-w-3xl mx-auto mb-6 sm:mb-8 px-2"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         <div>
-          <label htmlFor="goal" className="block text-lg font-semibold text-gray-800 mb-2">
+          <label htmlFor="goal" className="block text-base sm:text-lg font-semibold text-gray-800 mb-2">
             What is your central goal?
           </label>
           <input
@@ -34,14 +34,14 @@ export function GoalInput({ onSubmit, isGenerating }: GoalInputProps) {
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
             placeholder="e.g., Be the #1 draft pick for 8 NPB teams"
-            className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors touch-manipulation"
             disabled={isGenerating}
           />
         </div>
         <motion.button
           type="submit"
           disabled={!goal.trim() || isGenerating}
-          className="w-full px-6 py-3 text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          className="w-full min-h-[48px] px-5 sm:px-6 py-3 sm:py-3.5 text-base sm:text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors touch-manipulation"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -51,7 +51,7 @@ export function GoalInput({ onSubmit, isGenerating }: GoalInputProps) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Generating your Harada Method grid...
+              <span className="text-sm sm:text-base">Generating your Harada Method grid...</span>
             </span>
           ) : (
             'Generate My 64-Cell Roadmap'

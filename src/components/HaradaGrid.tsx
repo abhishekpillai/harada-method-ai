@@ -188,24 +188,38 @@ export function HaradaGrid({ gridData, onCellUpdate }: HaradaGridProps) {
   const gridCells = renderGrid();
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4">
-      <div className="grid grid-cols-9 gap-0 border-4 border-gray-700 bg-white shadow-2xl">
-        {gridCells.flat().map((cell, index) => {
-          const row = Math.floor(index / 9);
-          const col = index % 9;
-          const borderClasses = getSectionBorderClasses(row, col);
-          const sectionRef = getSectionRef(row, col);
+    <div className="w-full max-w-7xl mx-auto p-2 sm:p-4">
+      {/* Mobile: Horizontal scroll container */}
+      <div className="overflow-x-auto overflow-y-auto -mx-2 sm:mx-0">
+        <div className="inline-block min-w-full sm:min-w-0">
+          {/* Grid with minimum size for mobile */}
+          <div
+            className="grid grid-cols-9 gap-0 border-4 border-gray-700 bg-white shadow-2xl mx-auto"
+            style={{ minWidth: '640px', maxWidth: '100%' }}
+          >
+            {gridCells.flat().map((cell, index) => {
+              const row = Math.floor(index / 9);
+              const col = index % 9;
+              const borderClasses = getSectionBorderClasses(row, col);
+              const sectionRef = getSectionRef(row, col);
 
-          return (
-            <div
-              key={index}
-              ref={sectionRef}
-              className={`aspect-square ${borderClasses}`}
-            >
-              {cell}
-            </div>
-          );
-        })}
+              return (
+                <div
+                  key={index}
+                  ref={sectionRef}
+                  className={`aspect-square ${borderClasses}`}
+                >
+                  {cell}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile scroll hint */}
+      <div className="text-center mt-2 text-xs text-gray-500 sm:hidden">
+        ← Swipe to explore the grid →
       </div>
     </div>
   );
