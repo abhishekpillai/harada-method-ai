@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { GridCell } from './GridCell';
 import type { HaradaGrid as HaradaGridType } from '../types';
 
@@ -9,91 +9,70 @@ interface HaradaGridProps {
 
 export function HaradaGrid({ gridData, onCellUpdate }: HaradaGridProps) {
   const { goal, pillars } = gridData;
+  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Calculate animation delays for ripple effect
   const getPillarDelay = (pillarIndex: number) => 0.2 + pillarIndex * 0.15;
   const getTaskDelay = (pillarIndex: number, taskIndex: number) =>
     getPillarDelay(pillarIndex) + 0.3 + taskIndex * 0.1;
 
-  // Map pillar indices to grid positions (surrounding the center)
-  const pillarPositions = [
-    { row: 0, col: 3 }, // Top
-    { row: 1, col: 5 }, // Top-right
-    { row: 3, col: 7 }, // Right
-    { row: 5, col: 6 }, // Bottom-right
-    { row: 7, col: 4 }, // Bottom
-    { row: 6, col: 2 }, // Bottom-left
-    { row: 4, col: 0 }, // Left
-    { row: 2, col: 1 }, // Top-left
+  // Map pillar indices to their positions in the center 3x3 section
+  const centerPillarPositions = [
+    { row: 3, col: 3 }, // Pillar 0 - top-left of center
+    { row: 3, col: 4 }, // Pillar 1 - top-center of center
+    { row: 3, col: 5 }, // Pillar 2 - top-right of center
+    { row: 4, col: 3 }, // Pillar 3 - middle-left of center
+    { row: 4, col: 5 }, // Pillar 4 - middle-right of center
+    { row: 5, col: 3 }, // Pillar 5 - bottom-left of center
+    { row: 5, col: 4 }, // Pillar 6 - bottom-center of center
+    { row: 5, col: 5 }, // Pillar 7 - bottom-right of center
   ];
 
-  // Map tasks to grid positions (8 tasks per pillar, radiating outward)
-  const getTaskPositions = (pillarIndex: number) => {
-    const taskMaps = [
-      // Pillar 0 (Top) tasks
-      [
-        { row: 0, col: 0 }, { row: 0, col: 1 }, { row: 0, col: 2 },
-        { row: 0, col: 4 }, { row: 0, col: 5 }, { row: 0, col: 6 },
-        { row: 0, col: 7 }, { row: 1, col: 3 },
-      ],
-      // Pillar 1 (Top-right) tasks
-      [
-        { row: 1, col: 6 }, { row: 1, col: 7 }, { row: 2, col: 7 },
-        { row: 1, col: 4 }, { row: 2, col: 5 }, { row: 2, col: 6 },
-        { row: 1, col: 2 }, { row: 2, col: 3 },
-      ],
-      // Pillar 2 (Right) tasks
-      [
-        { row: 3, col: 6 }, { row: 4, col: 7 }, { row: 5, col: 7 },
-        { row: 2, col: 4 }, { row: 3, col: 5 }, { row: 4, col: 6 },
-        { row: 3, col: 3 }, { row: 3, col: 4 },
-      ],
-      // Pillar 3 (Bottom-right) tasks
-      [
-        { row: 6, col: 7 }, { row: 7, col: 7 }, { row: 7, col: 6 },
-        { row: 5, col: 5 }, { row: 6, col: 6 }, { row: 6, col: 5 },
-        { row: 5, col: 3 }, { row: 5, col: 4 },
-      ],
-      // Pillar 4 (Bottom) tasks
-      [
-        { row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 },
-        { row: 7, col: 3 }, { row: 7, col: 5 }, { row: 6, col: 4 },
-        { row: 6, col: 3 }, { row: 6, col: 1 },
-      ],
-      // Pillar 5 (Bottom-left) tasks
-      [
-        { row: 6, col: 0 }, { row: 5, col: 0 }, { row: 5, col: 1 },
-        { row: 6, col: 3 }, { row: 5, col: 2 }, { row: 4, col: 1 },
-        { row: 4, col: 3 }, { row: 4, col: 2 },
-      ],
-      // Pillar 6 (Left) tasks
-      [
-        { row: 4, col: 0 }, { row: 3, col: 0 }, { row: 2, col: 0 },
-        { row: 4, col: 1 }, { row: 3, col: 1 }, { row: 3, col: 2 },
-        { row: 2, col: 2 }, { row: 2, col: 3 },
-      ],
-      // Pillar 7 (Top-left) tasks
-      [
-        { row: 1, col: 0 }, { row: 1, col: 1 }, { row: 2, col: 2 },
-        { row: 2, col: 4 }, { row: 1, col: 2 }, { row: 1, col: 3 },
-        { row: 1, col: 4 }, { row: 2, col: 3 },
-      ],
-    ];
-    return taskMaps[pillarIndex] || [];
+  // Map pillar indices to their section centers (where pillar name appears with 8 tasks around it)
+  const sectionCenters = [
+    { row: 1, col: 1, sectionRow: 0, sectionCol: 0 },   // Pillar 0 - top-left section
+    { row: 1, col: 4, sectionRow: 0, sectionCol: 1 },   // Pillar 1 - top-center section
+    { row: 1, col: 7, sectionRow: 0, sectionCol: 2 },   // Pillar 2 - top-right section
+    { row: 4, col: 1, sectionRow: 1, sectionCol: 0 },   // Pillar 3 - middle-left section
+    { row: 4, col: 7, sectionRow: 1, sectionCol: 2 },   // Pillar 4 - middle-right section
+    { row: 7, col: 1, sectionRow: 2, sectionCol: 0 },   // Pillar 5 - bottom-left section
+    { row: 7, col: 4, sectionRow: 2, sectionCol: 1 },   // Pillar 6 - bottom-center section
+    { row: 7, col: 7, sectionRow: 2, sectionCol: 2 },   // Pillar 7 - bottom-right section
+  ];
+
+  // Get the 8 positions around a center point
+  const getSurroundingPositions = (centerRow: number, centerCol: number) => [
+    { row: centerRow - 1, col: centerCol - 1 }, // top-left
+    { row: centerRow - 1, col: centerCol },     // top
+    { row: centerRow - 1, col: centerCol + 1 }, // top-right
+    { row: centerRow, col: centerCol - 1 },     // left
+    { row: centerRow, col: centerCol + 1 },     // right
+    { row: centerRow + 1, col: centerCol - 1 }, // bottom-left
+    { row: centerRow + 1, col: centerCol },     // bottom
+    { row: centerRow + 1, col: centerCol + 1 }, // bottom-right
+  ];
+
+  // Handle clicking a pillar name in the center section
+  const handlePillarClick = (pillarIndex: number) => {
+    const section = sectionRefs.current[pillarIndex];
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Add temporary highlight
+      section.classList.add('section-highlight');
+      setTimeout(() => section.classList.remove('section-highlight'), 2000);
+    }
   };
 
-  // Build the 8x8 grid
+  // Build the 9x9 grid
   const renderGrid = () => {
-    const grid: (React.ReactElement | null)[][] = Array(8)
+    const grid: (React.ReactElement | null)[][] = Array(9)
       .fill(null)
-      .map(() => Array(8).fill(null));
+      .map(() => Array(9).fill(null));
 
-    // Place center goal (roughly center position, spanning conceptually)
-    // For visual purposes, center is at row 3-4, col 3-4
-    // We'll use position row 3, col 3 as the "center"
-    grid[3][3] = (
+    // Place center goal at (4,4)
+    grid[4][4] = (
       <GridCell
-        key="center"
+        key="center-goal"
         content={goal}
         type="center"
         delay={0}
@@ -101,44 +80,56 @@ export function HaradaGrid({ gridData, onCellUpdate }: HaradaGridProps) {
       />
     );
 
-    // Place pillars
+    // Place pillar names in the center 3x3 section (around the goal)
     pillars.forEach((pillar, pillarIndex) => {
-      const pos = pillarPositions[pillarIndex];
-      grid[pos.row][pos.col] = (
+      const centerPos = centerPillarPositions[pillarIndex];
+      grid[centerPos.row][centerPos.col] = (
         <GridCell
-          key={`pillar-${pillarIndex}`}
+          key={`center-pillar-${pillarIndex}`}
           content={pillar.title}
           type="pillar"
           delay={getPillarDelay(pillarIndex)}
           isEditable={true}
           onContentChange={(newContent) => onCellUpdate?.(pillarIndex, null, newContent)}
+          onClick={() => handlePillarClick(pillarIndex)}
+          className="cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
         />
       );
 
-      // Place tasks for this pillar
-      const taskPositions = getTaskPositions(pillarIndex);
-      pillar.tasks.forEach((task, taskIndex) => {
+      // Place pillar name at its section center with tasks around it
+      const sectionCenter = sectionCenters[pillarIndex];
+      grid[sectionCenter.row][sectionCenter.col] = (
+        <GridCell
+          key={`section-pillar-${pillarIndex}`}
+          content={pillar.title}
+          type="pillar"
+          delay={getPillarDelay(pillarIndex)}
+          isEditable={false}
+        />
+      );
+
+      // Place 8 tasks around the pillar in its section
+      const taskPositions = getSurroundingPositions(sectionCenter.row, sectionCenter.col);
+      pillar.tasks.slice(0, 8).forEach((task, taskIndex) => {
         const taskPos = taskPositions[taskIndex];
-        if (taskPos && !grid[taskPos.row][taskPos.col]) {
-          grid[taskPos.row][taskPos.col] = (
-            <GridCell
-              key={`task-${pillarIndex}-${taskIndex}`}
-              content={task}
-              type="task"
-              delay={getTaskDelay(pillarIndex, taskIndex)}
-              isEditable={true}
-              onContentChange={(newContent) =>
-                onCellUpdate?.(pillarIndex, taskIndex, newContent)
-              }
-            />
-          );
-        }
+        grid[taskPos.row][taskPos.col] = (
+          <GridCell
+            key={`task-${pillarIndex}-${taskIndex}`}
+            content={task}
+            type="task"
+            delay={getTaskDelay(pillarIndex, taskIndex)}
+            isEditable={true}
+            onContentChange={(newContent) =>
+              onCellUpdate?.(pillarIndex, taskIndex, newContent)
+            }
+          />
+        );
       });
     });
 
-    // Fill empty cells with placeholders
-    for (let row = 0; row < 8; row++) {
-      for (let col = 0; col < 8; col++) {
+    // Fill any remaining empty cells (shouldn't be any in proper structure)
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
         if (!grid[row][col]) {
           grid[row][col] = (
             <GridCell
@@ -156,16 +147,65 @@ export function HaradaGrid({ gridData, onCellUpdate }: HaradaGridProps) {
     return grid;
   };
 
+  // Helper to determine if a cell is on a section boundary
+  const getSectionBorderClasses = (row: number, col: number) => {
+    const classes = [];
+    // Right border at col 2, 5 (between sections)
+    if (col === 2 || col === 5) classes.push('border-r-4 border-r-gray-700');
+    // Bottom border at row 2, 5 (between sections)
+    if (row === 2 || row === 5) classes.push('border-b-4 border-b-gray-700');
+    return classes.join(' ');
+  };
+
+  // Helper to add section ref
+  const getSectionRef = (row: number, col: number) => {
+    const sectionRow = Math.floor(row / 3);
+    const sectionCol = Math.floor(col / 3);
+
+    // Skip center section (1,1)
+    if (sectionRow === 1 && sectionCol === 1) return null;
+
+    // Map section to pillar index
+    const sectionToPillar: { [key: string]: number } = {
+      '0-0': 0, '0-1': 1, '0-2': 2,
+      '1-0': 3,           '1-2': 4,
+      '2-0': 5, '2-1': 6, '2-2': 7,
+    };
+    const key = `${sectionRow}-${sectionCol}`;
+    const pillarIndex = sectionToPillar[key];
+
+    // Only set ref at section center
+    const sectionCenter = sectionCenters[pillarIndex];
+    if (sectionCenter && row === sectionCenter.row && col === sectionCenter.col) {
+      return (el: HTMLDivElement | null) => {
+        sectionRefs.current[pillarIndex] = el;
+      };
+    }
+
+    return null;
+  };
+
   const gridCells = renderGrid();
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
-      <div className="grid grid-cols-8 gap-0 border border-gray-500 bg-white shadow-2xl">
-        {gridCells.flat().map((cell, index) => (
-          <div key={index} className="aspect-square">
-            {cell}
-          </div>
-        ))}
+    <div className="w-full max-w-7xl mx-auto p-4">
+      <div className="grid grid-cols-9 gap-0 border-4 border-gray-700 bg-white shadow-2xl">
+        {gridCells.flat().map((cell, index) => {
+          const row = Math.floor(index / 9);
+          const col = index % 9;
+          const borderClasses = getSectionBorderClasses(row, col);
+          const sectionRef = getSectionRef(row, col);
+
+          return (
+            <div
+              key={index}
+              ref={sectionRef}
+              className={`aspect-square ${borderClasses}`}
+            >
+              {cell}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

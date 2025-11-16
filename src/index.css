@@ -67,3 +67,18 @@ body {
 .grid-cell-highlighted {
   background-color: var(--color-harada-yellow);
 }
+
+.section-highlight {
+  animation: section-pulse 2s ease-in-out;
+}
+
+@keyframes section-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 10px rgba(59, 130, 246, 0.5);
+  }
+}

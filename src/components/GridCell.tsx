@@ -9,6 +9,7 @@ interface GridCellProps {
   delay?: number;
   onClick?: () => void;
   onContentChange?: (newContent: string) => void;
+  className?: string;
 }
 
 export function GridCell({
@@ -19,6 +20,7 @@ export function GridCell({
   delay = 0,
   onClick,
   onContentChange,
+  className = '',
 }: GridCellProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(content);
@@ -29,7 +31,7 @@ export function GridCell({
       : type === 'pillar'
       ? 'grid-cell-pillar'
       : 'grid-cell-task'
-  } ${isHighlighted ? 'grid-cell-highlighted' : ''}`;
+  } ${isHighlighted ? 'grid-cell-highlighted' : ''} ${className}`;
 
   const handleDoubleClick = () => {
     if (isEditable && onContentChange) {
