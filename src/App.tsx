@@ -386,6 +386,17 @@ function App() {
       >
         <p>Inspired by Shohei Ohtani's success with the Harada Method</p>
         <p className="mt-2">Built with ❤️ using React, Tailwind CSS, and OpenAI</p>
+        <p className="mt-2 text-xs text-gray-400">
+          Created by{' '}
+          <a
+            href="https://x.com/abhiondemand"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-gray-600 transition-colors underline decoration-dotted"
+          >
+            @abhiondemand
+          </a>
+        </p>
       </motion.footer>
     </div>
   );
