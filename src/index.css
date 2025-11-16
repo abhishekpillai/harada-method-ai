@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme {
+  --color-harada-yellow: #FFEB3B;
+  --color-harada-gray: #E5E5E5;
+  --color-harada-dark-gray: #666666;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: rgb(249 250 251);
+  color: rgb(17 24 39);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.grid-cell {
+  border: 1px solid rgb(156 163 175);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  min-height: 60px;
+}
+
+@media (min-width: 640px) {
+  .grid-cell {
+    font-size: 0.875rem;
+  }
+}
+
+.grid-cell-center {
+  background-color: var(--color-harada-yellow);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+@media (min-width: 640px) {
+  .grid-cell-center {
+    font-size: 1.125rem;
+  }
+}
+
+.grid-cell-pillar {
+  background-color: rgb(209 213 219);
+  font-weight: 600;
+}
+
+.grid-cell-task {
+  background-color: white;
+  cursor: pointer;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.grid-cell-task:hover {
+  background-color: rgb(249 250 251);
+}
+
+.grid-cell-highlighted {
+  background-color: var(--color-harada-yellow);
+}
