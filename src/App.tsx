@@ -336,12 +336,6 @@ function App() {
           >
             <HaradaGrid gridData={gridData} onCellUpdate={handleCellUpdate} />
 
-            {/* Watermark (only visible when printing) */}
-            <div className="print-watermark">
-              <p>Generated with Harada Method AI • {new Date().toLocaleDateString()}</p>
-              <p className="mt-1">x.com/abhiondemand</p>
-            </div>
-
             {/* Instructions */}
             <motion.div
               initial={{ opacity: 0 }}

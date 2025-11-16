@@ -132,11 +132,23 @@ body {
 
 /* Print styles for export functionality */
 @media print {
-  /* Hide everything except the grid */
-  body {
-    background: white !important;
+  /* Define page settings */
+  @page {
+    size: A4 landscape;
+    margin: 0.3cm;
   }
 
+  /* Reset all body/html spacing */
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Hide everything except the grid */
   header,
   button,
   .instructions-section,
@@ -144,21 +156,38 @@ body {
     display: none !important;
   }
 
-  /* Show the grid nicely */
-  .grid-container {
-    page-break-inside: avoid;
-    margin: 0 auto;
+  /* Aggressively remove ALL spacing from all wrapper elements */
+  * {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* Show watermark when printing */
-  .print-watermark {
-    display: block !important;
-    margin-top: 1rem;
-    text-align: center;
-    font-size: 10px;
-    color: #9ca3af;
-    border-top: 1px solid #e5e7eb;
-    padding-top: 0.5rem;
+  /* Target specific wrapper elements */
+  body > div,
+  body > div > div,
+  .min-h-screen,
+  .max-w-7xl,
+  .mx-auto,
+  div[class*="overflow"] {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+    overflow: visible !important;
+  }
+
+  /* Scale grid to fit perfectly on one page */
+  .grid-container,
+  div[class*="grid-cols-9"] {
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    margin: 0.5cm auto !important;
+    padding: 0 !important;
+    transform: scale(0.66);
+    transform-origin: top center;
+    min-width: 0 !important;
   }
 
   /* Ensure colors print correctly */
@@ -186,9 +215,4 @@ body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-}
-
-/* Watermark hidden by default, shown only when printing */
-.print-watermark {
-  display: none;
 }
